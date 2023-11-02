@@ -1,11 +1,47 @@
 import { Button, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useState } from 'react';
 import { useVoiceRecognition } from './hooks/useVoiceRecognition';
+import * as FileSystem from 'expo-file-system'; //expo file system api, this is an api that allows us to read and write files
+import { Audio } from 'expo-av';
+import { writeAudioToFile } from './utils /writeAudioToFile';
+import { playFromPath } from './utils /playFromPath';
 
-export default function App() {
+
+
+Audio.setAudioModeAsync({
+  allowsRecordingIOS: false,
+  staysActiveInBackground: false,
+  playsInSilentModeIOS: true,
+  shouldDuckAndroid: false ,
+  playThroughEarpieceAndroid: false,
+}); 
+
+export default function App() { 
   const[borderColor, setBorderColor] = useState<"lightgray" | "lightgreen">("lightgray");
   const {state, startRecognizing, stopRecognizing, destroyRecognizing} = useVoiceRecognition();
+  const handleSubmit = async () => {
+    if(!state.results[0])return; 
+    try{
+      //fetch the audio and then  this is gonna be a blob, bynary large object. From the server 
+      const audioBlob = await fetchAudio(state.results[0]);
 
+      const  reader = new FileReader(); // file reader is a browser api that allows us to read files
+      reader.onload = async (e) => {
+        if(e.target && typeof e.target.result === "string"){
+          const audioData  = e.target.result.split(",")[1]; //split the string and get the second part of the string which is the audio data
+          // save data  
+          const path = await writeAudioToFile(audioData);  //this return a promise
+          //play the audio
+          await playFromPath(path);
+          destroyRecognizing();
+        }
+      };
+      reader.readAsDataURL(audioBlob); //read the audio blob as a data url
+    }catch(e){
+      console.error(e);
+    }
+
+  }; //async means that this function will return a promise, a promise is a value that we don't know yet, but we will know in the future
   return (
     <View style={styles.container}>
       <Text style = {{fontSize: 32, fontWeight: 'bold', marginBottom: 30}}>Talk GPT</Text>
@@ -19,7 +55,6 @@ export default function App() {
       }}
       >Press and hold this botton to record your voice. Realease the
          button tos send the recording , and you will hear a response</Text>
-         <Text style = {{marginVertical: 10, fontSize: 17}}>{JSON.stringify(state, null, 2)}</Text>  
          <Text style = {{marginVertical: 10, fontSize: 17}}>Your Message</Text>  
 
          <Pressable
@@ -30,6 +65,7 @@ export default function App() {
          onPressOut={() => {
           setBorderColor("lightgray");
           stopRecognizing();
+          //handleSubmit();
          }}
          style = {{ 
           width: "90%",
@@ -43,6 +79,7 @@ export default function App() {
          >
           <Text>Hold to speak</Text>
          </Pressable>
+         <Text style = {{marginVertical: 10, fontSize: 17}}>{JSON.stringify(state, null, 2)}</Text>  
          <Button title = "Reply last message"  onPress={() => {}}/>
     </View>
   );
