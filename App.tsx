@@ -5,6 +5,7 @@ import * as FileSystem from 'expo-file-system'; //expo file system api, this is 
 import { Audio } from 'expo-av';
 import { writeAudioToFile } from './utils /writeAudioToFile';
 import { playFromPath } from './utils /playFromPath';
+import { fetchAudio } from './utils /fetchAudio';
 
 
 
@@ -58,7 +59,7 @@ export default function App() {
   }; //async means that this function will return a promise, a promise is a value that we don't know yet, but we will know in the future
   return (
     <View style={styles.container}>
-      <Text style = {{fontSize: 32, fontWeight: 'bold', marginBottom: 30}}>Talk GPT</Text>
+      <Text style = {{fontSize: 32, fontWeight: 'bold', marginBottom: 30}}>Your Talking assistant</Text>
       <Text
       style = {{
         textAlign: 'center',
