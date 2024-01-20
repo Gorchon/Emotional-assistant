@@ -23,19 +23,18 @@ The following dependencies are essential for the proper functioning of the proje
 
 ### Frontend (React Native)
 
-\`\`\`bash
+```bash
 yarn add @react-native-voice/voice
 yarn add expo-av
 yarn add expo-file-system
-\`\`\`
+```
 ### Backend (NestJS)
 
-\`\`\`bash
+```bash
 npm i -g @nestjs/cli
 yarn add @google-cloud/text-to-speech
 yarn add openai
 yarn add dotenv
 yarn add cors
-\`\`\`
-
+```
 This README provides a comprehensive overview, allowing for easy setup and understanding of the interconnected nature of the EmoChat project and its supporting components.
